@@ -1,0 +1,178 @@
+From af207e5f62bb88247e647483c07a4ea9ca33d318 Mon Sep 17 00:00:00 2001
+From: coolsnowwolf <coolsnowwolf@gmail.com>
+Date: Sat, 23 Nov 2024 17:05:35 +0800
+Subject: [PATCH] uboot-rockchip: update rkbin and add rk3576 support
+
+---
+ package/boot/rockchip-rkbin/Makefile          | 25 ++++++++++++-------
+ package/boot/uboot-rk35xx/Makefile            | 23 +++++++++++++----
+ .../patches/100-disable-optee-build.patch     |  9 +++++++
+ package/boot/uboot-rockchip/Makefile          |  8 +++---
+ 4 files changed, 47 insertions(+), 18 deletions(-)
+ create mode 100644 package/boot/uboot-rk35xx/patches/100-disable-optee-build.patch
+
+diff --git a/package/boot/rockchip-rkbin/Makefile b/package/boot/rockchip-rkbin/Makefile
+index 41474b629a879..42fa8f3a37edc 100644
+--- a/package/boot/rockchip-rkbin/Makefile
++++ b/package/boot/rockchip-rkbin/Makefile
+@@ -9,9 +9,9 @@ PKG_RELEASE:=1
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL:=https://github.com/rockchip-linux/rkbin.git
+-PKG_SOURCE_DATE:=2024-02-22
+-PKG_SOURCE_VERSION:=a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0
+-PKG_MIRROR_HASH:=49ffeae00fd5b6f53c94ae43d5377325e9284bd6ec5be3ab388512cccae7babd
++PKG_SOURCE_DATE:=2024-10-23
++PKG_SOURCE_VERSION:=7c35e21a8529b3758d1f051d1a5dc62aae934b2b
++PKG_MIRROR_HASH:=f1713c9d329ee2d6610dafd079f842d43ab2a5e8b55e0eb449a777fdaf6d8720
+ 
+ PKG_LICENSE_FILES:=LICENSE
+ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
+@@ -38,7 +38,7 @@ endef
+ define rkbin/rk3328
+   DEPENDS:=@TARGET_rockchip_armv8
+   ATF:=rk33/rk322xh_bl31_v1.49.elf
+-  TPL:=rk33/rk3328_ddr_333MHz_v1.19.bin
++  TPL:=rk33/rk3328_ddr_333MHz_v1.20.bin
+   SPL:=rk33/rk322xh_miniloader_v2.50.bin
+ endef
+ 
+@@ -52,25 +52,31 @@ endef
+ define rkbin/rk3528
+   DEPENDS:=@TARGET_rockchip_armv8
+   ATF:=rk35/rk3528_bl31_v1.17.elf
+-  TPL:=rk35/rk3528_ddr_1056MHz_v1.09.bin
++  TPL:=rk35/rk3528_ddr_1056MHz_v1.10.bin
+ endef
+ 
+ define rkbin/rk3566
+   DEPENDS:=@TARGET_rockchip_armv8
+   ATF:=rk35/rk3568_bl31_v1.44.elf
+-  TPL:=rk35/rk3566_ddr_1056MHz_v1.21.bin
++  TPL:=rk35/rk3566_ddr_1056MHz_v1.23.bin
+ endef
+ 
+ define rkbin/rk3568
+   DEPENDS:=@TARGET_rockchip_armv8
+   ATF:=rk35/rk3568_bl31_v1.44.elf
+-  TPL:=rk35/rk3568_ddr_1560MHz_v1.21.bin
++  TPL:=rk35/rk3568_ddr_1560MHz_v1.23.bin
++endef
++
++define rkbin/rk3576
++  DEPENDS:=@TARGET_rockchip_armv8
++  ATF:=rk35/rk3576_bl31_v1.12.elf
++  TPL:=rk35/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
+ endef
+ 
+ define rkbin/rk3588
+   DEPENDS:=@TARGET_rockchip_armv8
+-  ATF:=rk35/rk3588_bl31_v1.45.elf
+-  TPL:=rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
++  ATF:=rk35/rk3588_bl31_v1.47.elf
++  TPL:=rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.18.bin
+ endef
+ 
+ VARIANTS:= \
+@@ -79,6 +85,7 @@ VARIANTS:= \
+ 	rk3528 \
+ 	rk3566 \
+ 	rk3568 \
++	rk3576 \
+ 	rk3588
+ 
+ define Build/Compile
+diff --git a/package/boot/uboot-rk35xx/Makefile b/package/boot/uboot-rk35xx/Makefile
+index 4620fae8eb17a..5d1bdaa4cfb2f 100644
+--- a/package/boot/uboot-rk35xx/Makefile
++++ b/package/boot/uboot-rk35xx/Makefile
+@@ -13,9 +13,9 @@ PKG_RELEASE:=1
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL:=https://github.com/radxa/u-boot
+ 
+-PKG_SOURCE_DATE:=2024-03-01
+-PKG_SOURCE_VERSION:=3b2035860d51a75fc70941acf9ae934140991b21
+-PKG_MIRROR_HASH:=4cba13e74fff830f946ee52d55c6a94e2de691d45db6cf69c481f91a8063e23f
++PKG_SOURCE_DATE:=2024-10-29
++PKG_SOURCE_VERSION:=27398f1e19628407fabb279034653d23c9369f12
++PKG_MIRROR_HASH:=d0469f6c1f0d561d1495844fff2b50bc42af16fa4e33f5f42f092770a2bb4967
+ 
+ include $(INCLUDE_DIR)/u-boot.mk
+ include $(INCLUDE_DIR)/package.mk
+@@ -39,13 +39,26 @@ define U-Boot/evb-rk3528
+     widora_mangopi-m28k-pro
+   DEPENDS:=+PACKAGE_u-boot-evb-rk3528:rkbin-rk3528
+   ATF:=rk3528_bl31_v1.17.elf
+-  DDR:=rk3528_ddr_1056MHz_v1.09.bin
++  DDR:=rk3528_ddr_1056MHz_v1.10.bin
+   UBOOT_CONFIG:=rk3528
+   SOC:=rk3528
+ endef
+ 
++define U-Boot/evb-rk3576
++  BUILD_SUBTARGET:=armv8
++  NAME:=RK3576 Evaluation
++  BUILD_DEVICES:= \
++    armsom_sige5
++  DEPENDS:=+PACKAGE_u-boot-evb-rk3576:rkbin-rk3576
++  ATF:=rk3576_bl31_v1.12.elf
++  DDR:=rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
++  UBOOT_CONFIG:=rk3576
++  SOC:=rk3576
++endef
++
+ UBOOT_TARGETS := \
+-  evb-rk3528
++  evb-rk3528 \
++  evb-rk3576
+ 
+ UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes
+ 
+diff --git a/package/boot/uboot-rk35xx/patches/100-disable-optee-build.patch b/package/boot/uboot-rk35xx/patches/100-disable-optee-build.patch
+new file mode 100644
+index 0000000000000..79ad2676da894
+--- /dev/null
++++ b/package/boot/uboot-rk35xx/patches/100-disable-optee-build.patch
+@@ -0,0 +1,9 @@
++--- a/configs/rk3576_defconfig
+++++ b/configs/rk3576_defconfig
++@@ -224,6 +224,3 @@ CONFIG_AVB_LIBAVB_AB=y
++ CONFIG_AVB_LIBAVB_ATX=y
++ CONFIG_AVB_LIBAVB_USER=y
++ CONFIG_RK_AVB_LIBAVB_USER=y
++-CONFIG_OPTEE_CLIENT=y
++-CONFIG_OPTEE_V2=y
++-CONFIG_OPTEE_ALWAYS_USE_SECURITY_PARTITION=y
+diff --git a/package/boot/uboot-rockchip/Makefile b/package/boot/uboot-rockchip/Makefile
+index e3d859079afa0..e6ede0ff5597e 100644
+--- a/package/boot/uboot-rockchip/Makefile
++++ b/package/boot/uboot-rockchip/Makefile
+@@ -190,7 +190,7 @@ define U-Boot/rk3566/Default
+   BUILD_SUBTARGET:=armv8
+   DEPENDS:=+PACKAGE_u-boot-$(1):rkbin-rk3566
+   ATF:=rk3568_bl31_v1.44.elf
+-  TPL:=rk3566_ddr_1056MHz_v1.21.bin
++  TPL:=rk3566_ddr_1056MHz_v1.23.bin
+ endef
+ 
+ define U-Boot/nanopi-r3s-rk3566
+@@ -220,7 +220,7 @@ define U-Boot/rk3568/Default
+   BUILD_SUBTARGET:=armv8
+   DEPENDS:=+PACKAGE_u-boot-$(1):rkbin-rk3568
+   ATF:=rk3568_bl31_v1.44.elf
+-  TPL:=rk3568_ddr_1560MHz_v1.21.bin
++  TPL:=rk3568_ddr_1560MHz_v1.23.bin
+ endef
+ 
+ define U-Boot/bpi-r2-pro-rk3568
+@@ -313,8 +313,8 @@ endef
+ define U-Boot/rk3588/Default
+   BUILD_SUBTARGET:=armv8
+   DEPENDS:=+PACKAGE_u-boot-$(1):rkbin-rk3588
+-  ATF:=rk3588_bl31_v1.45.elf
+-  TPL:=rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
++  ATF:=rk3588_bl31_v1.47.elf
++  TPL:=rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.18.bin
+ endef
+ 
+ define U-Boot/generic-rk3588

@@ -16,8 +16,6 @@ wget -N https://github.com/coolsnowwolf/lede/raw/master/include/kernel-6.6 -P in
 
 sed -i "/KernelPackage,ptp/d" package/kernel/linux/modules/other.mk
 
-rm -rf package/boot/uboot-rk35xx/patches/001-cmd-fix_source.patch
-
 #sed -i -e "s/configs\/dilusense-\(.*-.*_defconfig\)/configs\/\1/" \
 #	   -e "s/configs\/sharevdi-\(.*-.*_defconfig\)/configs\/\1/" \
 #	   -e "s/configs\/rongpin-\(.*-.*_defconfig\)/configs\/\1/" \
