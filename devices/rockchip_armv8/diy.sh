@@ -7,7 +7,9 @@ SHELL_FOLDER=$(dirname $(readlink -f "$0"))
 
 rm -rf package/boot target/linux/rockchip linux/generic
 
-git_clone_path master https://github.com/coolsnowwolf/lede package/boot target/linux/rockchip linux/generic
+git_clone_path master https://github.com/coolsnowwolf/lede target/linux/rockchip linux/generic
+
+git_clone_path c74ed3282cf0aabd550203f0e500c0f4dcd2a872 https://github.com/coolsnowwolf/lede package/boot
 
 wget -N https://github.com/istoreos/istoreos/raw/istoreos-22.03/target/linux/rockchip/patches-5.10/305-r2s-pwm-fan.patch -P target/linux/rockchip/patches-6.6/
 wget -N https://github.com/openwrt/openwrt/raw/refs/heads/openwrt-24.10/target/linux/rockchip/Makefile -P target/linux/rockchip/
