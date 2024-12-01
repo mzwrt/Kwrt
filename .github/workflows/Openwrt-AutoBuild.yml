@@ -321,7 +321,7 @@ jobs:
             -P ${{ secrets.SERVER_PORT }} \
             -o StrictHostKeyChecking=no \
             -r openwrt/bin/targets \
-            root@${{ secrets.SERVER_HOST }}:/www/wwwroot/dl.openwrt.ai/releases/tmp/
+            {{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/www/wwwroot/dl.openwrt.ai/releases/tmp/
 
 
     - name: Upload firmware for artifact
