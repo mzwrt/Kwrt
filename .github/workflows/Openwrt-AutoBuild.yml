@@ -18,7 +18,7 @@ env:
   SCKEY: ${{ secrets.SCKEY }}
   TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-  REMOTE_USER: ${{ secrets.REMOTE_USER }}
+  SERVER_USER: ${{ secrets.SERVER_USER }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   SSH_PRIVATE_KEY_PASSWORD: ${{ secrets.SSH_PRIVATE_KEY_PASSWORD }}
   DOCKER_ID: ${{ secrets.DOCKER_ID }}
@@ -330,7 +330,7 @@ jobs:
         SOURCE: openwrt/bin/targets
         REMOTE_HOST: ${{ secrets.SERVER_HOST }}
         REMOTE_PORT: ${{ secrets.SERVER_PORT }}
-        REMOTE_USER: ${{ secrets.REMOTE_USER }}
+        REMOTE_USER: ${{ secrets.SERVER_USER }}
         TARGET: "/tmp/tmp-upload"
         SCRIPT: |
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S mkdir -p /www/wwwroot/mzwrt.com/releases/tmp/
