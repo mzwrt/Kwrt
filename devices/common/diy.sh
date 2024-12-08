@@ -28,12 +28,12 @@ sed -i "s/procd-seccomp//" include/target.mk
 
 sed -i "s/^.*vermagic$/\techo '1' > \$(LINUX_DIR)\/.vermagic/" include/kernel-defaults.mk
 
-status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/mzwrt/MzWrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
 echo "$status"
 while [[ "$status" == "in_progress" || "$status" == "queued" ]];do
 	echo "wait 5s"
 	sleep 5
-	status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+	status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/mzwrt/MzWrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
 done
 
 mv -f feeds/kiddin9/r81* tmp/
