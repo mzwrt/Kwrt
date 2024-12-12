@@ -326,10 +326,17 @@ jobs:
         REMOTE_HOST: ${{ secrets.SERVER_HOST }}
         REMOTE_PORT: ${{ secrets.SERVER_PORT }}
         REMOTE_USER: ${{ secrets.SERVER_USER }}
-        TARGET: "/tmp/tmp-upload"
-        SCRIPT: |
+        TARGET: "/www/tmp-upload"
+        SCRIPT_BEFORE: |
+          # 提前创建目标目录并设置权限
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S mkdir -p /www/tmp-upload
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S chown -R $USER:$USER /www/tmp-upload
+        SCRIPT_AFTER: |
           echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S mkdir -p /www/wwwroot/mzwrt.com/releases/tmp/
-          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S mv /tmp/tmp-upload/* /www/wwwroot/mzwrt.com/releases/tmp/
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S mv /www/tmp-upload/* /www/wwwroot/mzwrt.com/releases/tmp/
+          # 设置权限：文件为444，文件夹为544
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S find /www/wwwroot/mzwrt.com/releases/tmp/ -type f -exec chmod 444 {} \;
+          echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S find /www/wwwroot/mzwrt.com/releases/tmp/ -type d -exec chmod 544 {} \;
           echo "Deployment completed with sudo privileges."
 
     - name: Upload firmware for artifact
